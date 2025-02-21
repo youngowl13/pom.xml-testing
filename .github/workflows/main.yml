@@ -1,0 +1,42 @@
+name: License Checker Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  license-checker:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Go environment
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23' # Specify Go version here
+
+      # Step 3: Run the Go code
+      - name: Run License Checker
+        run: |
+          go mod init checker || true
+          go mod tidy
+          go run checker.go
+          ls -la
+     
+
+      # Step 5: Upload the generated report as an artifact
+      - name: Upload License Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-report
+          path: ./dependency-license-report.html
+
+          
